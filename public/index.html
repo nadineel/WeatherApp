@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/css/flag-icon.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    
+  
+  <style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 5px;
+    }
+  </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>Plan your Holidays!</h1>
+        <p>Where will you go?</p>
+        <p>City: <input v-model="city"> </p>
+        <p>Country Code:<input v-model="country"> </p>
+        <p><button v-on:click="getWeather">Find Out!</button> </p>
+        <p>{{summary.country_icon}}</p>
+        
+
+        <div v-if="summaryExists && summary.code==200">
+            <h4>Your reliable packing expert recommends you to</h4>
+            <li v-if="summary.mask==true">BRING MASKS! PM2.5={{summary.pm2_5}}.</li>
+            <li v-else="summary.mask==false">Dont you worry about masks on your trip!</li>
+            <li v-if="summary.rain==true">Don't forget to bring your umbrellas! It might rain at some point.</li>
+            <li v-if="summary.rain==false">Enjoy the sunny holiday!</li>
+            <li v-if="summary.cold&&summary.mild&&summary.hot==true">Expect the unexpected! Pack for the unpredictable weather</li>
+            <li v-else-if="summary.cold==true">Pack for the cold weather! Temperature may drop below 12°C</li>
+            <li v-else-if="summary.mild==true">Pack for a mild weather! The weather is on your side! Temperature is between 12°C and 24°C</li>
+            <li v-else="summary.hot==true">Pack for the hot weather! Temperature may rise above 24°C</li>
+            
+            <h2>Weather Forecast for {{summary.city}}, {{summary.country}}</h2>
+            <span v-bind:class="summary.country_icon"></span>
+            <table>
+                <thead>
+                    <tr style="border: 1px solid black">
+                        <th>Date</th>
+                        <th>Temperature (°C)</th>
+                        <th>Wind Speed (km/h)</th>
+                        <th>Rainfall Level(mm)</th>
+                        <th>Weather</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="row in summary.list">
+                        <td>{{row.date}}</td>
+                        <td>{{row.temp}}</td>
+                        <td>{{row.wind_speed}}</td>
+                        <td>{{row.rain}}</td>
+                        <td><img v-if="row.icon" v-bind:src="row.icon"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div v-if="summaryExists && summary.code==404">
+            <h2>Error</h2>
+            <p>Location not found. At least in this universe ;)</p>
+        </div>
+
+
+        <p><button v-on:click="getJokes">Smile :)</button> </p>
+        <div v-if="jokeExists">
+            <h2>{{jokeSummary.joke}}</h2>
+        </div>
+        
+    </div>
+
+  <script>
+
+  var app = new Vue({
+      el: '#app',
+      data: {
+          city: "",
+          summary: {},
+          summaryExists: false,
+          jokeExists: false,
+          jokeSummary:{},
+      },
+      methods: {
+          getWeather: getWeather ,
+          getJokes: getJokes  
+      }
+  })
+
+  
+  async function getWeather(){
+      console.log("getWeather called")
+      fetch(`/weather/${this.city},${this.country}`)
+         .then(res=>res.json())
+         .then(res=>
+             this.summary=res,
+             this.summaryExists=true)
+         .then(data=>console.log(data))
+  }
+
+  async function getJokes(){
+      console.log("getJokes called")
+      fetch('/jokes')
+         .then(res=>res.json())
+         .then(res=>
+             this.jokeSummary=res,
+             this.jokeExists=true)
+         .then(data=>console.log(data))
+  }
+
+
+  </script>
+</body>
