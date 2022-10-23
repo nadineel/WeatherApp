@@ -1,0 +1,63 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/css/flag-icon.min.css");
+
+*{
+    box-sizing: border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:url('images/weather.jpg');
+    background-repeat: no-repeat;
+    background-size:cover;
+    overflow:hidden;
+    height: 100vh;
+    font-family:sans-serif;
+}
+
+.container{
+    padding: 20px;
+    color:#fff;
+}
+
+.packing_guide{
+    position:absolute;
+    top:0;
+    right:0;
+}
+
+.weather{
+    display: flex;
+    flex-direction: column;
+    background: rgba(141, 141, 175, 0.6);
+    padding:20px;
+    border-radius: 10px;
+    margin: 0 10px;
+    border: 1px solid #eee;
+
+    font-size: large;
+    font-weight: 100;
+    text-align: center;
+}
+
+.weather .next_weather{
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow-y: hidden;
+}
+
+.weather .next_weather .weather_item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(129, 113, 42, 0.2)
+}

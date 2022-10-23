@@ -6,37 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Forecast</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/css/flag-icon.min.css" />
+    <link rel="stylesheet" type="text/css" href="/style.css" /> 
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     
-  
-  <style>
-    table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    td, th {
-        border: 1px solid #dddddd;
-        text-align: center;
-        padding: 5px;
-    }
-  </style>
 </head>
 
 <body>
-    <div id="app">
-        <h1>Plan your Holidays!</h1>
-        <p>Where will you go?</p>
-        <p>City: <input v-model="city"> </p>
-        <p>Country Code:<input v-model="country"> </p>
-        <p><button v-on:click="getWeather">Find Out!</button> </p>
-        <p>{{summary.country_icon}}</p>
+    <div class="container" id="app">
+        <div class="landing">
+            <h1>Plan your Holidays!</h1>
+            <p>Where will you go?</p>
+            <p>City: <input v-model="city"> </p>
+            <p>Country Code:<input v-model="country"> </p>
+            <p><button v-on:click="getWeather">Find Out!</button> </p>
+        </div>
         
-
         <div v-if="summaryExists && summary.code==200">
             <h4>Your reliable packing expert recommends you to</h4>
             <li v-if="summary.mask==true">BRING MASKS! PM2.5={{summary.pm2_5}}.</li>
@@ -47,29 +32,55 @@
             <li v-else-if="summary.cold==true">Pack for the cold weather! Temperature may drop below 12°C</li>
             <li v-else-if="summary.mild==true">Pack for a mild weather! The weather is on your side! Temperature is between 12°C and 24°C</li>
             <li v-else="summary.hot==true">Pack for the hot weather! Temperature may rise above 24°C</li>
-            
-            <h2>Weather Forecast for {{summary.city}}, {{summary.country}}</h2>
-            <span v-bind:class="summary.country_icon"></span>
-            <table>
-                <thead>
-                    <tr style="border: 1px solid black">
-                        <th>Date</th>
-                        <th>Temperature (°C)</th>
-                        <th>Wind Speed (km/h)</th>
-                        <th>Rainfall Level(mm)</th>
-                        <th>Weather</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in summary.list">
-                        <td>{{row.date}}</td>
-                        <td>{{row.temp}}</td>
-                        <td>{{row.wind_speed}}</td>
-                        <td>{{row.rain}}</td>
-                        <td><img v-if="row.icon" v-bind:src="row.icon"></td>
-                    </tr>
-                </tbody>
-            </table>
+            <br/>
+
+            <div class="weather">
+                 
+                <div class="today" v-for="data in summary.list.slice(0, 1)">
+                    <br/>
+                    <h2>{{summary.city}}, {{summary.country}} <span v-bind:class="summary.country_icon"></span></h2>
+                    <br/>
+                    <ul style="list-style-type: none">
+                        <li>{{data.date}}</li>
+                        <li>TODAY</li>
+                        <li><img v-if="data.icon" v-bind:src="data.icon"></li>
+                        <li>Temperature (°C):   {{data.temp}}</li>
+                        <li>Wind Speed (km/h):  {{data.wind_speed}}</li>
+                        <li>Rainfall Level(mm): {{data.rain}}</li>
+                    </ul>
+                    <br/>
+                </div>
+
+                <div class="next_weather">
+                
+                    <div class="weather_item" v-for="x in summary.list.slice(1, 5)">
+                        <ul style="list-style-type: none">
+                            <li>{{x.date}}</li>
+                            <li><img v-if="x.icon" v-bind:src="x.icon"></li>
+                            <li>Temperature (°C):   {{x.temp}}</li>
+                            <li>Wind Speed (km/h):  {{x.wind_speed}}</li>
+                            <li>Rainfall Level(mm): {{x.rain}}</li>
+                        </ul>
+                    </div>
+                
+            </div>
+
+            </div>
+
+            <!-- <div class="next_weather">
+                
+                    <div class="weather_item" v-for="x in summary.list.slice(1, 5)">
+                        <ul style="list-style-type: none">
+                            <li>{{x.date}}</li>
+                            <li><img v-if="x.icon" v-bind:src="x.icon"></li>
+                            <li>Temperature (°C):   {{x.temp}}</li>
+                            <li>Wind Speed (km/h):  {{x.wind_speed}}</li>
+                            <li>Rainfall Level(mm): {{x.rain}}</li>
+                        </ul>
+                    </div>
+                
+            </div> -->
+
         </div>
 
         

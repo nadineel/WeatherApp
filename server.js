@@ -127,14 +127,16 @@ async function parseWeather(city){
             dayArray[timeIndex].rain = weatherItem.rain['3h']
             parsedWeatherData.rain = true
         }
-        if (weatherItem.main.temp < 12){
-            parsedWeatherData.cold = true
-        } else if (weatherItem.main.temp > 24){
-            parsedWeatherData.hot = true
-        } else {
-            parsedWeatherData.mild = true
-        }
+        
         prevWeatherItemDate = currentWeatherItemDate;
+    }
+    
+    if (avg_temp < 12){
+        parsedWeatherData.cold = true
+    } else if (avg_temp > 24){
+        parsedWeatherData.hot = true
+    } else{
+        parsedWeatherData.mild = true
     }
 
     return parsedWeatherData
