@@ -1,5 +1,5 @@
 const API_KEY= "40fecc1f3c03733c8d7b40ce8beb0fe8"
-
+// imports
 const express = require('express')
 const app = express()
 const https=require("https");
@@ -10,32 +10,35 @@ const fetch= require('node-fetch')
 let publicPath = path.resolve(__dirname, "public")
 app.use(express.static(publicPath))
 
-
+//https get requests
 app.get('/weather/:city', getWeather)
 app.get('/jokes', getJokes)
 
 async function getWeather(req,res){
     let city=req.params.city
     let data= await parseWeather(city)
-    //res.send(data)
     data=res.json(data)
-    //console.log(data)  
 }
-
-
 
 async function checkPollution(lat,lon){
     var url=`http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`
-    const response= await fetch(url)
-    const airPollutionJSON=await response.json()
+    let response= await fetch(url)
+    let airPollutionJSON=await response.json()
     return airPollutionJSON
 }
 
 async function parseWeather(city){
-    var url=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=${API_KEY}&units=metric`
-    const response= await fetch(url)
+    let url=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=${API_KEY}&units=metric`
+    let response= await fetch(url).catch(err=>alert(err))
     const openWeatherJSON=await response.json()
-    
+    if(openWeatherJSON.cod==404){
+        console.log("here")
+        var parsedData={
+            code:openWeatherJSON.cod
+        }
+        return parsedData
+    }
+
     var parsedWeatherData={
         code: 200,
         city: openWeatherJSON.city.name,
@@ -142,7 +145,7 @@ async function parseWeather(city){
 
         prevWeatherItemDate = currentWeatherItemDate;
     }
-console.log(parsedWeatherData)
+
     return parsedWeatherData
 }
 

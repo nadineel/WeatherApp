@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,12 +74,10 @@
 
         </div>
 
-        
-        <div v-if="summaryExists && summary.code==404">
+        <div class="error_message" v-else-if="summaryExists && summary.code==404">
             <h2>Error</h2>
             <p>Location not found. At least in this universe ;)</p>
         </div>
-
 
         <button class ="jokeButton" v-on:click="getJokes"><img src="images/flower.jpg"></button>
         <div class="displayJoke"v-if="jokeExists">
@@ -109,12 +106,15 @@
   
   async function getWeather(){
       console.log("getWeather called")
+
+
       fetch(`/weather/${this.city}`)
          .then(res=>res.json())
          .then(res=>
              this.summary=res,
              this.summaryExists=true)
          .then(data=>console.log(data))
+         .catch(err=>alert(err))
   }
 
   async function getJokes(){
