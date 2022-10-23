@@ -24,8 +24,8 @@
 
             <div class="packing_guide">
                 <h4>Your reliable packing expert recommends you to</h4>
-                <li v-if="summary.mask==true">BRING MASKS! PM2.5={{summary.pm2_5}}.</li>
-                <li v-else="summary.mask==false">Not worry about masks on your trip!</li>
+                <!-- <li v-if="summary.mask==true">BRING MASKS! PM2.5={{summary.pm2_5}}.</li>
+                <li v-else="summary.mask==false">Not worry about masks on your trip!</li> -->
                 <li v-if="summary.rain==true">Not forget to bring your umbrellas! It might rain at some point.</li>
                 <li v-if="summary.rain==false">Enjoy the sunny holiday!</li>
                 <li v-if="summary.cold&&summary.mild&&summary.hot==true">Expect the unexpected! Pack for the unpredictable weather</li>
@@ -49,6 +49,8 @@
                         <li>Temperature (°C):   {{data.temp}}</li>
                         <li>Wind Speed (km/h):  {{data.wind_speed}}</li>
                         <li>Rainfall Level(mm): {{data.rain}}</li>
+                        <br/>
+                        <li v-if="data.mask==true">WEAR A MASK.</li>
                     </ul>
                     <br/>
                 </div>
@@ -62,6 +64,9 @@
                             <li>Temperature (°C):   {{x.temp}}</li>
                             <li>Wind Speed (km/h):  {{x.wind_speed}}</li>
                             <li>Rainfall Level(mm): {{x.rain}}</li>
+                            <br/>
+                            <li v-if="x.mask==true">WEAR A MASK.</li>
+                            <li v-if="x.mask==false">NO NEED FOR A MASK.</li>
                         </ul>
                     </div>
                 </div>

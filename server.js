@@ -22,21 +22,7 @@ async function getWeather(req,res){
     //console.log(data)  
 }
 
-async function getJokes(req,res){
-    var url="https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single&amount=10";
-    const response= await fetch(url)
-    const data=await response.json()
-    var parsedJokes={
-        error: data.error,
-        amount: data.amount,
-        joke:data.jokes[0].joke
-    }
-    let jokes=res.json(parsedJokes)
-    //var allJokes=data.jokes.filter(x=>x.joke)
-    
-    //jokes=res.json(parsedJokes)
-    
-}
+
 
 async function checkPollution(lat,lon){
     var url=`http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`
@@ -62,14 +48,14 @@ async function parseWeather(city){
         mild: false,
         hot: false,
         mask: false,
-        pm2_5:0.0,
         list: []
         
     }
 
-    const pollutionData=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
-
+    const pollutionJSON=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
+    
     var weatherItem = openWeatherJSON.list[0];
+    var pollutionItem = pollutionJSON.list[0];
     var dateItem=new Date(weatherItem.dt*1000).toDateString()
     
     var dayArray = [
@@ -79,23 +65,25 @@ async function parseWeather(city){
             wind_speed: weatherItem.wind.speed,
             rain: 0.00,
             icon: weatherItem.weather.icon,
-            pm2_5: 0.00
+            pollution:pollutionItem.components.pm2_5
         }
     ];
 
-    var pollution=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
-    pm2_5=pollution.list[0].components.pm2_5
+    // var pollution=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
+    // pm2_5=pollution.list[0].components.pm2_5
     //var avg_temp = dayArray.reduce( ((acc,day) => acc+day.temp), 0)/dayArray.length;
-    if(pm2_5>10){
-        parsedWeatherData.mask=true
-        parsedWeatherData.pm2_5=pm2_5
-    }
+    // if(pm2_5>10){
+    //     parsedWeatherData.mask=true
+    //     parsedWeatherData.pm2_5=pm2_5
+    // }
 
     var dayIndex=0
     var timeIndex=0;
     var prevWeatherItemDate=dateItem
     for(var i=0; i<openWeatherJSON.list.length && dayIndex<5; i++){
         weatherItem=openWeatherJSON.list[i]
+        pollutionItem=pollutionJSON.list[i]
+
         var currentWeatherItemDate=(new Date(weatherItem.dt*1000)).toDateString()
         if(prevWeatherItemDate==currentWeatherItemDate && i!=openWeatherJSON.list.length-1){
             timeIndex++;
@@ -106,12 +94,23 @@ async function parseWeather(city){
             var avg_rain = dayArray.reduce( ((acc,day) => acc+day.rain), 0)/dayArray.length;
             var weatherIcon= weatherItem.weather[0].icon;
 
+            var isMask=false
+            var avg_pollution = dayArray.reduce( ((acc,day) => acc+day.pollution), 0)/dayArray.length;
+            //console.log(avg_pollution)
+            if(avg_pollution>10){
+                isMask=true
+            }
+            else{
+                isMask=false
+            }
+
             parsedWeatherData.list[dayIndex]={
                 date: prevWeatherItemDate,
                 temp: avg_temp.toFixed(2),
                 wind_speed: avg_wind_speed.toFixed(2),
                 rain: avg_rain.toFixed(2),
-                icon: `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`
+                icon: `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`,
+                mask: isMask
             }
 
             dayIndex++;
@@ -123,7 +122,8 @@ async function parseWeather(city){
             temp: weatherItem.main.temp,
             wind_speed: weatherItem.wind.speed,
             rain: 0.00,
-            icon:weatherItem.weather[0].icon
+            icon:weatherItem.weather[0].icon,
+            pollution: pollutionItem.components.pm2_5
         }
         
         //packing
@@ -139,10 +139,23 @@ async function parseWeather(city){
         } else {
             parsedWeatherData.mild = true
         }
+
         prevWeatherItemDate = currentWeatherItemDate;
     }
-
+console.log(parsedWeatherData)
     return parsedWeatherData
+}
+
+async function getJokes(req,res){
+    var url="https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single&amount=10";
+    const response= await fetch(url)
+    const data=await response.json()
+    var parsedJokes={
+        error: data.error,
+        amount: data.amount,
+        joke:data.jokes[0].joke
+    }
+    let jokes=res.json(parsedJokes)
 }
 
 
