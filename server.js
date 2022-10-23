@@ -14,12 +14,16 @@ app.use(express.static(publicPath))
 app.get('/weather/:city', getWeather)
 app.get('/jokes', getJokes)
 
+//called by the vue app
 async function getWeather(req,res){
     let city=req.params.city
     let data= await parseWeather(city)
     data=res.json(data)
 }
 
+//inputs: latitude and longitude
+//returns: json file on air pollution
+//function is called by parseWeather to get pm2_5 values
 async function checkPollution(lat,lon){
     var url=`http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`
     let response= await fetch(url)
@@ -27,12 +31,15 @@ async function checkPollution(lat,lon){
     return airPollutionJSON
 }
 
+//input: city
+//output: json file
+//function called by getWeather. Handles errors and parses openWeather json 
+//  to extract certain attributes to one json file
 async function parseWeather(city){
-    let url=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=${API_KEY}&units=metric`
+    const url=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=${API_KEY}&units=metric`
     let response= await fetch(url).catch(err=>alert(err))
-    const openWeatherJSON=await response.json()
+    let openWeatherJSON=await response.json()
     if(openWeatherJSON.cod==404){
-        console.log("here")
         var parsedData={
             code:openWeatherJSON.cod
         }
@@ -51,8 +58,7 @@ async function parseWeather(city){
         mild: false,
         hot: false,
         mask: false,
-        list: []
-        
+        list: []    
     }
 
     const pollutionJSON=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
@@ -71,14 +77,6 @@ async function parseWeather(city){
             pollution:pollutionItem.components.pm2_5
         }
     ];
-
-    // var pollution=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
-    // pm2_5=pollution.list[0].components.pm2_5
-    //var avg_temp = dayArray.reduce( ((acc,day) => acc+day.temp), 0)/dayArray.length;
-    // if(pm2_5>10){
-    //     parsedWeatherData.mask=true
-    //     parsedWeatherData.pm2_5=pm2_5
-    // }
 
     var dayIndex=0
     var timeIndex=0;
@@ -99,7 +97,6 @@ async function parseWeather(city){
 
             var isMask=false
             var avg_pollution = dayArray.reduce( ((acc,day) => acc+day.pollution), 0)/dayArray.length;
-            //console.log(avg_pollution)
             if(avg_pollution>10){
                 isMask=true
             }
@@ -149,6 +146,9 @@ async function parseWeather(city){
     return parsedWeatherData
 }
 
+
+//called by vue
+//returns some jokes from a free Joke API
 async function getJokes(req,res){
     var url="https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single&amount=10";
     const response= await fetch(url)
