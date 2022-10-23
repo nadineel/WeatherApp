@@ -18,21 +18,35 @@ body{
 .container{
     padding: 20px;
     color:#fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 .packing_guide{
-    position:absolute;
-    top:0;
+    color:black;
+    position:fixed;
+    top:20px;
     right:0;
+
+    padding:20px;
+    border-radius: 10px;
+    margin: 0px 50px;
+    background: rgba(255, 255, 255, 1);
+    
+    font-size: large;
+    font-weight: 100;
+    text-align: left;
 }
 
 .weather{
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
     background: rgba(141, 141, 175, 0.6);
     padding:20px;
     border-radius: 10px;
-    margin: 0 10px;
+    margin: 50px 30px;
     border: 1px solid #eee;
 
     font-size: large;
@@ -60,4 +74,31 @@ body{
     padding: 15px;
     border-radius: 10px;
     background: rgba(129, 113, 42, 0.2)
+}
+
+.displayJoke{
+    position:fixed;
+    bottom:100px;
+
+    font-size:small;
+    color:#000;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+    background: rgba(129, 113, 42, 0.2)
+}
+
+.jokeButton{
+    position:fixed;
+    bottom:20px;
+    right:10px;
+    width: 70px;
+    height: 70px;
+}
+img{
+    max-width: 100%;
+    max-height: 100%;
 }

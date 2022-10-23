@@ -14,24 +14,26 @@
 
 <body>
     <div class="container" id="app">
-        <div class="landing">
-            <h1>Plan your Holidays!</h1>
-            <p>Where will you go?</p>
-            <p>City: <input v-model="city"> </p>
-            <p>Country Code:<input v-model="country"> </p>
-            <p><button v-on:click="getWeather">Find Out!</button> </p>
-        </div>
+        <h1>Plan your Holidays!</h1>
+        <h4>Where will you go?</h4>   
+        <p>City: <input v-model="city" placeholder="Dublin,IE">
+            <button v-on:click="getWeather">Search</button> 
+        </p>
         
         <div v-if="summaryExists && summary.code==200">
-            <h4>Your reliable packing expert recommends you to</h4>
-            <li v-if="summary.mask==true">BRING MASKS! PM2.5={{summary.pm2_5}}.</li>
-            <li v-else="summary.mask==false">Dont you worry about masks on your trip!</li>
-            <li v-if="summary.rain==true">Don't forget to bring your umbrellas! It might rain at some point.</li>
-            <li v-if="summary.rain==false">Enjoy the sunny holiday!</li>
-            <li v-if="summary.cold&&summary.mild&&summary.hot==true">Expect the unexpected! Pack for the unpredictable weather</li>
-            <li v-else-if="summary.cold==true">Pack for the cold weather! Temperature may drop below 12°C</li>
-            <li v-else-if="summary.mild==true">Pack for a mild weather! The weather is on your side! Temperature is between 12°C and 24°C</li>
-            <li v-else="summary.hot==true">Pack for the hot weather! Temperature may rise above 24°C</li>
+
+            <div class="packing_guide">
+                <h4>Your reliable packing expert recommends you to</h4>
+                <li v-if="summary.mask==true">BRING MASKS! PM2.5={{summary.pm2_5}}.</li>
+                <li v-else="summary.mask==false">Not worry about masks on your trip!</li>
+                <li v-if="summary.rain==true">Not forget to bring your umbrellas! It might rain at some point.</li>
+                <li v-if="summary.rain==false">Enjoy the sunny holiday!</li>
+                <li v-if="summary.cold&&summary.mild&&summary.hot==true">Expect the unexpected! Pack for the unpredictable weather</li>
+                <li v-else-if="summary.cold==true">Pack for the cold weather! Temperature may drop below 12°C</li>
+                <li v-else-if="summary.hot==true">Pack for the hot weather! Temperature may rise above 24°C</li>   
+                <li v-else="summary.mild==true">Pack for a mild weather! The weather is on your side! Temperature is between 12°C and 24°C</li> 
+            </div>
+
             <br/>
 
             <div class="weather">
@@ -62,24 +64,9 @@
                             <li>Rainfall Level(mm): {{x.rain}}</li>
                         </ul>
                     </div>
-                
-            </div>
+                </div>
 
             </div>
-
-            <!-- <div class="next_weather">
-                
-                    <div class="weather_item" v-for="x in summary.list.slice(1, 5)">
-                        <ul style="list-style-type: none">
-                            <li>{{x.date}}</li>
-                            <li><img v-if="x.icon" v-bind:src="x.icon"></li>
-                            <li>Temperature (°C):   {{x.temp}}</li>
-                            <li>Wind Speed (km/h):  {{x.wind_speed}}</li>
-                            <li>Rainfall Level(mm): {{x.rain}}</li>
-                        </ul>
-                    </div>
-                
-            </div> -->
 
         </div>
 
@@ -90,11 +77,11 @@
         </div>
 
 
-        <p><button v-on:click="getJokes">Smile :)</button> </p>
-        <div v-if="jokeExists">
+        <button class ="jokeButton" v-on:click="getJokes"><img src="images/flower.jpg"></button>
+        <div class="displayJoke"v-if="jokeExists">
             <h2>{{jokeSummary.joke}}</h2>
         </div>
-        
+            
     </div>
 
   <script>
@@ -117,7 +104,7 @@
   
   async function getWeather(){
       console.log("getWeather called")
-      fetch(`/weather/${this.city},${this.country}`)
+      fetch(`/weather/${this.city}`)
          .then(res=>res.json())
          .then(res=>
              this.summary=res,

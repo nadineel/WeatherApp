@@ -39,7 +39,7 @@ async function getJokes(req,res){
 }
 
 async function checkPollution(lat,lon){
-    var url=`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`
+    var url=`http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`
     const response= await fetch(url)
     const airPollutionJSON=await response.json()
     return airPollutionJSON
@@ -49,7 +49,7 @@ async function parseWeather(city){
     var url=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=${API_KEY}&units=metric`
     const response= await fetch(url)
     const openWeatherJSON=await response.json()
-
+    
     var parsedWeatherData={
         code: 200,
         city: openWeatherJSON.city.name,
@@ -67,6 +67,8 @@ async function parseWeather(city){
         
     }
 
+    const pollutionData=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
+
     var weatherItem = openWeatherJSON.list[0];
     var dateItem=new Date(weatherItem.dt*1000).toDateString()
     
@@ -76,12 +78,14 @@ async function parseWeather(city){
             temp: weatherItem.main.temp,
             wind_speed: weatherItem.wind.speed,
             rain: 0.00,
-            icon: weatherItem.weather.icon
+            icon: weatherItem.weather.icon,
+            pm2_5: 0.00
         }
     ];
 
     var pollution=await checkPollution(parsedWeatherData.lat, parsedWeatherData.lon)
     pm2_5=pollution.list[0].components.pm2_5
+    //var avg_temp = dayArray.reduce( ((acc,day) => acc+day.temp), 0)/dayArray.length;
     if(pm2_5>10){
         parsedWeatherData.mask=true
         parsedWeatherData.pm2_5=pm2_5
@@ -128,15 +132,14 @@ async function parseWeather(city){
             parsedWeatherData.rain = true
         }
         
+        if (weatherItem.main.temp < 12){
+            parsedWeatherData.cold = true
+        } else if (weatherItem.main.temp > 24){
+            parsedWeatherData.hot = true
+        } else {
+            parsedWeatherData.mild = true
+        }
         prevWeatherItemDate = currentWeatherItemDate;
-    }
-    
-    if (avg_temp < 12){
-        parsedWeatherData.cold = true
-    } else if (avg_temp > 24){
-        parsedWeatherData.hot = true
-    } else{
-        parsedWeatherData.mild = true
     }
 
     return parsedWeatherData
